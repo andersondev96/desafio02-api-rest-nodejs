@@ -1,26 +1,16 @@
 import fastify from 'fastify'
-import crypto from 'node:crypto'
-import { knex } from './database'
 import { env } from './env'
+import { mealsRoutes } from './routes/meals'
+import { usersRoutes } from './routes/users'
 
 const app = fastify()
 
-app.get('/hello', async () => {
-  const users = await knex('users').select('*')
+app.register(usersRoutes, {
+  prefix: 'users',
+})
 
-  const meal = await knex('meals')
-    .insert({
-      id: crypto.randomUUID(),
-      name: 'Queijo Minas Frescal',
-      description: 'Queijo Minas Frescal Zero Gordura',
-      date: '2023-10-18',
-      time: '14:00:00',
-      isInDiet: true,
-      user_id: 'dfcf6f1c-9686-4251-92c2-62bfb9f8343d',
-    })
-    .returning('*')
-
-  return meal
+app.register(mealsRoutes, {
+  prefix: 'meals',
 })
 
 app
